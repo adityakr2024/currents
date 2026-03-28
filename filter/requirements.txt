@@ -1,0 +1,2 @@
+# filter/requirements.txt
+PyYAML>=6.0.1

@@ -1,0 +1,27 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# picker/config/picker_config.yaml
+# All tunable parameters for the picker module.
+# Change these without touching any Python code.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Output ────────────────────────────────────────────────────────────────────
+output:
+  top_n: 10                    # Articles to pick  ← change freely (range: 1–50)
+                               # 8  = tight daily digest
+                               # 10 = default (recommended)
+                               # 12 = broader coverage
+                               # 15 = comprehensive (slower, more tokens)
+
+# ── Compression ───────────────────────────────────────────────────────────────
+compression:
+  summary_max_chars: 220       # Max chars from summary field per article
+  fulltext_fallback_chars: 200 # Chars from full_text when summary is empty
+                               # Truncates at last word boundary
+
+# ── LLM call ─────────────────────────────────────────────────────────────────
+llm:
+  module_name: "picker"        # Label for AIPOOL metrics tracking
+
+# ── Retry & error handling ────────────────────────────────────────────────────
+retry:
+  max_attempts: 3              # Total attempts — 1 initial + up to 2 retries (range: 1–5)

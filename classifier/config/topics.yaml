@@ -1,0 +1,797 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# topics.yaml — UPSC syllabus keyword map, GS assignments, and special boosters
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── GATE 1: Hard exclusion patterns (regex) ───────────────────────────────────
+# Any article matching ANY of these is tagged EXCLUDED, score=0, pipeline stops.
+exclude_patterns:
+  # Entertainment / celebrity
+  - '\bipl\b'
+  - '\bcricket\b'
+  - '\bbollywood\b'
+  - '\bfilms?\b'
+  - '\bcinema\b'
+  - '\bbox\s+office\b'
+  - '\bwedding\b'
+  - '\bdivorce\b'
+  - '\bbreakup\b'
+  - '\bviral\b'
+  - '\bmeme\b'
+  - '\btrending\b'
+  - '\bfollowers\b'
+  - '\bcelebrity\b'
+  - '\bactor\b'
+  - '\bactress\b'
+  - '\bsinger\b'
+  - '\bitem\s+song\b'
+  - '\bott\s+release\b'
+  # Political drama / rhetoric (not policy)
+  - '\bslams\b'
+  - '\blashes\s+out\b'
+  - '\bhits\s+out\b'
+  - '\blashes\b.*\bpm\b'
+  - '\blashes\b.*\bcm\b'
+  - '\brally\b'
+  - '\broadshow\b'
+  - '\belection\s+speech\b'
+  - '\bpolitical\s+vendetta\b'
+  # Low-yield local crime / accidents
+  - '\bcheated\b'
+  - '\brobbery\b'
+  - '\bmurder\b'
+  - '\bhit[- ]and[- ]run\b'
+  # Electoral noise (not institutional)
+  - '\bbypolls?\b'
+  - '\bvote\s+share\b'
+  - '\bparty\s+symbol\b'
+  - '\bexit\s+poll\b'
+  - '\bopinion\s+poll\b'
+  # Market ticker
+  - '\bsensex\b'
+  - '\bnifty\b'
+  - '\bshare\s+price\b'
+  # Vague / clickbait
+  - '\bhoroscope\b'
+  - '\bastrology\b'
+  - '\bhow\s+to\b'
+  - '\btop\s+\d+\b'
+  - '\bbest\s+\d+\b'
+  - '\bviral\s+story\b'
+  - '\bhuman\s+interest\b'
+  # UPSC coaching noise
+  - '\b(clear(?:s|ed|ing)?|crack(?:s|ed)?)\s+upsc\b'
+  # Weather / traffic
+  - '\bweather\s+forecast\b'
+  - '\btraffic\s+jam\b'
+  # Sports results
+  - '\bchampions\s+league\b'
+  - '\bfootball\s+league\b'
+  - '\bfifa\b'
+  # Lifestyle
+  - '\brecipe\b'
+  - '\bfashion\s+week\b'
+  - '\blifestyle\b'
+  - '\bhoroscope\b'
+  - '\bgossip\b'
+
+
+# ── GATE 2A: Event-type bonuses (regex → score) ───────────────────────────────
+# Applied to title + summary. Only the FIRST matching bonus is added (highest wins).
+# Order matters — place higher-value patterns first.
+event_bonuses:
+  - pattern: '\b(constitution\s+bench|cji)\b'
+    score: 20
+    note: "constitution bench/CJI"
+
+  - pattern: '\b(supreme\s+court|sc)\b.*?\b(landmark|historic|first.?ever|right\s+to\s+die|passive\s+euthanasia|right\s+to\s+privacy)\b'
+    score: 18
+    note: "SC landmark ruling"
+
+  - pattern: '\b(supreme\s+court|high\s+court|sc|hc)\b.*?\b(says|observes|warns|rules|directs|stays|upholds|strikes\s+down)\b'
+    score: 18
+    note: "court order/ruling"
+
+  - pattern: '\b(union\s+cabinet|central\s+govt|centre)\s+(approves?|clears?|nods?|okays?)\b'
+    score: 18
+    note: "union cabinet approval"
+
+  - pattern: '\bparliament\s+passes?\b|\blok\s+sabha\s+passes?\b|\brajya\s+sabha\s+passes?\b'
+    score: 15
+    note: "parliamentary action"
+
+  - pattern: '\bbill\s+(passed|cleared|enacted)\b|\bact\s+notified\b'
+    score: 15
+    note: "bill/act enacted"
+
+  - pattern: '\bordinance\s+(promulgated|issued)\b'
+    score: 14
+    note: "ordinance issued"
+
+  - pattern: '\bcabinet\s+(approves?|clears?|nods?)\b'
+    score: 12
+    note: "cabinet approval"
+
+  - pattern: '\bsupreme\s+court\s+(orders?|rules?|holds?|upholds?)\b'
+    score: 12
+    note: "SC formal order"
+
+  - pattern: '\bhigh\s+court\s+(orders?|rules?|holds?)\b'
+    score: 10
+    note: "HC formal order"
+
+  - pattern: '\b(launches?|inaugurates?|rolls?\s+out)\b.*\b(scheme|mission|programme|yojana|portal|platform|initiative)\b'
+    score: 12
+    note: "scheme/mission launch"
+
+  - pattern: '\b(report|survey|data|index|census)\s+(released?|published|shows?|reveals?)\b'
+    score: 10
+    note: "report/index released"
+
+  - pattern: '\bindia\s+(ranks?|ranked|rises?|slips?)\b'
+    score: 10
+    note: "India ranking"
+
+  - pattern: '\b(mou|agreement|treaty|accord)\s+(signed|inked|finalised)\b|\bsigns?\s+(mou|agreement|treaty)\b'
+    score: 10
+    note: "treaty/agreement signed"
+
+  - pattern: '\bbudget\s+(allocates?|presents?|proposes?)\b|\bfinance\s+commission\b'
+    score: 12
+    note: "budget/finance commission"
+
+  - pattern: '\b(cpi|wpi|inflation|gdp|fiscal\s+deficit)\b'
+    score: 15
+    note: "macro economic indicator"
+
+  - pattern: '\b(vaccine|immunisation|vaccination\s+programme)\b'
+    score: 12
+    note: "health programme"
+
+  - pattern: '\b(net\s+zero|renewable\s+energy|green\s+hydrogen|sustainable\s+energy)\b'
+    score: 12
+    note: "clean energy policy"
+
+
+# ── GATE 2B: Statement / drama penalties (applied to TITLE only) ─────────────
+statement_penalties:
+  - pattern: '^(modi|rahul|kejriwal|shah|mamata|yogi|fadnavis|shinde|gehlot|nitish|chandrashekhar)\b.*\b(says?|said|claims?|demands?|urges?|calls?\s+for|warns?|vows?|pledges?|promises?)\b'
+    score: -20
+    note: "politician statement"
+
+  - pattern: '^(?!(supreme\s+court|rbi|niti\s+aayog|ec|government|centre|sc|hc|cji|parliament|ministry))\w+\s+\w+\s+(says?|said|claims?|alleges?|demands?|urges?)\b'
+    score: -15
+    note: "unnamed statement"
+
+  - pattern: '\bpromises?\b|\bvows?\s+to\b|\bpledges?\s+to\b'
+    score: -12
+    note: "political promise"
+
+  - pattern: '\bopposition\s+(demands?|attacks?|slams?|walks?\s+out)\b|\bwalkout\b'
+    score: -15
+    note: "opposition rhetoric"
+
+  - pattern: '\b(wins?|loses?|elected|defeated)\b.*\b(election|seat|constituency)\b'
+    score: -15
+    note: "electoral result"
+
+  - pattern: '\bsays?\s+(iran|china|russia|us|u\.?s\.?|officials?)\b'
+    score: -18
+    note: "foreign official statement"
+
+  - pattern: '^will\s+urge\b'
+    score: -18
+    note: "speculative urge"
+
+  - pattern: '\bhints?\s+at\b.*\bsuccessor\b|\b(successor|heir\s+apparent)\b'
+    score: -30
+    note: "succession chatter"
+
+
+# ── GATE 2C: UPSC topic keyword map ──────────────────────────────────────────
+# Each topic: weight (max score contribution) + keywords list + gs_paper tag
+topics:
+  "Polity & Governance":
+    gs_paper: GS2
+    weight: 10
+    keywords:
+      - constitution
+      - constitutional
+      - federalism
+      - centre-state
+      - inter-state
+      - governor
+      - article
+      - schedule
+      - citizenship
+      - secularism
+      - preamble
+      - delimitation
+      - judicial review
+      - judicial activism
+      - basic structure
+      - union cabinet
+      - central government
+      - parliament
+      - lok sabha
+      - rajya sabha
+      - president
+      - vice president
+      - cabinet committee
+      - election commission
+      - cag
+      - finance commission
+      - niti aayog
+      - law commission
+      - vigilance commission
+      - lokpal
+      - bill
+      - ordinance
+      - amendment
+      - statutory
+      - tribunal
+      - collegium
+      - data protection
+      - bharatiya nyaya sanhita
+      - it act
+      - uapa
+      - pmla
+      - afspa
+
+  "Economy":
+    gs_paper: GS3
+    weight: 10
+    keywords:
+      - gdp
+      - cpi
+      - wpi
+      - inflation
+      - fiscal deficit
+      - monetary policy
+      - rbi
+      - repo rate
+      - currency
+      - rupee
+      - forex
+      - balance of payments
+      - gst
+      - gst council
+      - sebi
+      - fdi
+      - export
+      - import
+      - trade agreement
+      - fta
+      - cepa
+      - world bank
+      - imf
+      - wto
+      - economic survey
+      - budget
+      - direct tax
+      - pli scheme
+      - semiconductor
+      - atmanirbhar
+      - logistics policy
+      - pm gati shakti
+      - industrial corridor
+      - energy transition
+      - nbfc
+      - msme
+      - startup
+      - disinvestment
+      - privatisation
+      - sovereign bond
+      - debt
+      - current account
+
+  "International Relations":
+    gs_paper: GS2
+    weight: 12
+    keywords:
+      - bilateral
+      - multilateral
+      - summit
+      - g20
+      - g7
+      - quad
+      - brics
+      - sco
+      - asean
+      - saarc
+      - united nations
+      - unsc
+      - foreign policy
+      - diplomatic
+      - strategic partnership
+      - india-us
+      - india-china
+      - india-russia
+      - india-pakistan
+      - indo-pacific
+      - west asia
+      - global south
+      - maritime security
+      - soft power
+      - nato
+      - who
+      - mou
+      - treaty
+      - accord
+      - sanctions
+      - geopolitics
+
+  "Environment & Ecology":
+    gs_paper: GS3
+    weight: 9
+    keywords:
+      - climate change
+      - cop28
+      - cop29
+      - cop30
+      - net zero
+      - carbon credit
+      - carbon sequestration
+      - green hydrogen
+      - biodiversity
+      - wildlife protection
+      - ramsar
+      - tiger census
+      - tiger reserve
+      - elephant corridor
+      - wetland
+      - mangrove
+      - coral reef
+      - deforestation
+      - ozone
+      - glacier
+      - ngt
+      - protected area
+      - unfccc
+      - nagoya protocol
+      - pollution
+      - disaster management
+      - cyclone
+      - flood
+      - drought
+      - earthquake
+      - biodiversity
+      - eez
+      - marine protected
+
+  "Science & Technology":
+    gs_paper: GS3
+    weight: 8
+    keywords:
+      - isro
+      - drdo
+      - gaganyaan
+      - chandrayaan
+      - aditya
+      - space mission
+      - launch vehicle
+      - missile
+      - satellite
+      - nuclear energy
+      - thorium
+      - artificial intelligence
+      - ai governance
+      - quantum computing
+      - crispr
+      - biotechnology
+      - genome
+      - vaccine
+      - drug approval
+      - clinical trial
+      - patent
+      - iit
+      - iiser
+      - csir
+      - dbt
+      - dst
+      - 5g
+      - 6g
+      - semiconductor
+      - digital india
+      - cyber security
+
+  "Social Justice":
+    gs_paper: GS2
+    weight: 12
+    keywords:
+      - women
+      - gender
+      - menstrual
+      - maternity
+      - workforce participation
+      - labour force participation
+      - equal opportunity
+      - equal pay
+      - sexual harassment
+      - posh act
+      - workplace equality
+      - care economy
+      - social justice
+      - transgender
+      - disability rights
+      - child rights
+      - scheduled caste
+      - scheduled tribe
+      - obc
+      - reservation
+      - tribal
+      - human trafficking
+      - bonded labour
+      - child labour
+      - nutrition
+      - malnutrition
+
+  "Defence & Security":
+    gs_paper: GS3
+    weight: 8
+    keywords:
+      - army
+      - navy
+      - air force
+      - coast guard
+      - defence ministry
+      - military
+      - border security
+      - lac
+      - loc
+      - ceasefire
+      - joint exercise
+      - indigenisation
+      - atmanirbhar defence
+      - terrorism
+      - naxal
+      - maoism
+      - internal security
+      - crpf
+      - bsf
+      - cisf
+      - intelligence bureau
+      - procurement
+      - defence acquisition
+
+  "Agriculture & Rural":
+    gs_paper: GS3
+    weight: 7
+    keywords:
+      - farmer
+      - agriculture
+      - horticulture
+      - crop
+      - msp
+      - irrigation
+      - kisan
+      - rural development
+      - food security
+      - fci
+      - pds
+      - fertilizer
+      - organic farming
+      - pm-kisan
+      - soil health
+      - cold storage
+      - agri infrastructure
+      - animal husbandry
+      - fisheries
+      - aquaculture
+      - e-nam
+      - fpo
+      - natural farming
+
+  "History & Culture":
+    gs_paper: GS1
+    weight: 6
+    keywords:
+      - archaeological
+      - heritage
+      - asi
+      - world heritage
+      - ancient
+      - medieval
+      - freedom struggle
+      - independence movement
+      - colonial
+      - partition
+      - cultural preservation
+      - intangible heritage
+      - classical language
+      - folk art
+      - tribal culture
+      - manuscript
+      - museum
+
+  "Geography":
+    gs_paper: GS1
+    weight: 6
+    keywords:
+      - river basin
+      - watershed
+      - interlinking rivers
+      - dam
+      - seismic zone
+      - monsoon
+      - ocean current
+      - continental shelf
+      - mineral deposit
+      - coal fields
+      - petroleum
+      - north east india
+      - island territory
+      - andaman
+      - lakshadweep
+      - border district
+
+  "Schemes & Programmes":
+    gs_paper: GS2
+    weight: 9
+    keywords:
+      - scheme
+      - mission
+      - programme
+      - yojana
+      - abhiyan
+      - campaign
+      - initiative
+      - launches
+      - launched
+      - inaugurated
+      - roll out
+      - implement
+      - cabinet approves
+      - cabinet clears
+      - ayushman
+      - pm-jan dhan
+      - beti bachao
+      - poshan
+      - swachh bharat
+      - jal jeevan
+      - ujjwala
+      - pm awas
+      - smart city
+      - amrut
+
+  "Ethics & Governance":
+    gs_paper: GS4
+    weight: 7
+    keywords:
+      - transparency
+      - accountability
+      - whistleblower
+      - conflict of interest
+      - code of conduct
+      - probity
+      - integrity
+      - civil services
+      - rti
+      - right to information
+      - ombudsman
+      - anti-corruption
+      - lokayukta
+      - governance reform
+      - e-governance
+      - public service
+
+
+# ── GATE 3: Special topic boosters ───────────────────────────────────────────
+# These are high-yield UPSC topics that deserve score boosts on top of base.
+# Boosters are ADDITIVE (multiple can fire). Total capped by gates.yaml:boost_max.
+boosters:
+  - name: "SC Landmark / Constitutional"
+    score: 25
+    patterns:
+      - '\b(supreme\s+court|sc)\b.*\b(landmark|constitutional|historic|first.?ever|precedent)\b'
+      - '\bbasic\s+structure\b'
+      - '\bconstitution\s+bench\b'
+      - '\bfundamental\s+rights?\b.*\b(upheld|violated|expanded|reading)\b'
+
+  - name: "Constitutional Amendment"
+    score: 22
+    patterns:
+      - '\bconstitutional\s+amendment\b'
+      - '\b\d+\w{0,2}\s+amendment\b'
+      - '\barticle\s+\d+\b.*\bamend(ed|ment)\b'
+
+  - name: "Menstrual / Reproductive Policy"
+    score: 20
+    patterns:
+      - '\bmenstrual\s+leave\b'
+      - '\bmenstruation\b.*\b(policy|leave|right|law)\b'
+      - '\breproductive\s+rights?\b'
+      - '\bmaternity\s+(benefit|leave|policy)\b.*\b(court|government|bill|act)\b'
+
+  - name: "Uniform Civil Code"
+    score: 20
+    patterns:
+      - '\buniform\s+civil\s+code\b'
+      - '\bucc\b'
+
+  - name: "Electoral Reforms / Delimitation"
+    score: 18
+    patterns:
+      - '\bdelimitation\s+commission\b'
+      - '\bone\s+nation\s+one\s+election\b'
+      - '\bsimultaneous\s+election\b'
+      - '\belectoral\s+bond\b'
+      - '\belectoral\s+reform\b'
+
+  - name: "Two-State / Geopolitical Doctrine"
+    score: 15
+    patterns:
+      - '\btwo.?state\s+solution\b'
+      - '\bstring\s+of\s+pearls\b'
+      - '\bnuclear\s+doctrine\b'
+      - '\bno.?first.?use\b'
+      - '\bindian\s+ocean\s+region\b'
+      - '\bindo.?pacific\s+strategy\b'
+
+  - name: "Global / India Index Ranking"
+    score: 15
+    patterns:
+      - '\b(human\s+development\s+index|global\s+hunger\s+index|ease\s+of\s+doing\s+business|global\s+innovation\s+index|press\s+freedom\s+index|corruption\s+perceptions\s+index)\b'
+      - '\bindia\s+rank(s|ed)?\s+\d+\b'
+
+  - name: "Climate / Environment Treaty"
+    score: 14
+    patterns:
+      - '\bnagoya\s+protocol\b'
+      - '\bparis\s+agreement\b'
+      - '\bkunming.?montreal\b'
+      - '\bcartagena\s+protocol\b'
+      - '\bkyoto\s+protocol\b'
+      - '\bcbd\b.*\bbiodiversity\b'
+
+  - name: "BEPS / Tax Policy"
+    score: 14
+    patterns:
+      - '\bbeps\b'
+      - '\bp.?notes?\b'
+      - '\bglobal\s+minimum\s+tax\b'
+      - '\bpillar\s+(one|two|1|2)\b.*\btax\b'
+
+  - name: "Space / Defence Milestone"
+    score: 12
+    patterns:
+      - '\b(gaganyaan|chandrayaan|aditya.?l1|mangalyaan)\b'
+      - '\bfirst\s+(indian|woman|private)\b.*\b(space|launch|mission)\b'
+      - '\btejas\b.*\b(mk|mark)\b'
+      - '\barjun\s+tank\b'
+
+
+# ── Action phrases in title (strong signal of concrete government action) ─────
+# These are checked in the article TITLE only. Presence adds a flat bonus.
+action_phrases:
+  - launches
+  - inaugurates
+  - approves
+  - passes
+  - orders
+  - rules
+  - holds
+  - signs
+  - ratifies
+  - enacts
+  - notifies
+  - releases
+  - publishes
+  - allocates
+  - sanctions
+  - commissions
+  - operationalises
+  - amends
+  - strikes down
+  - commissions
+
+
+# ── GS paper fallback priority (used when multiple topics match) ──────────────
+# If tagger finds multiple GS papers, pick highest-weight topic's paper.
+# Tie-break order: GS2 > GS3 > GS1 > GS4
+gs_priority:
+  - GS2
+  - GS3
+  - GS1
+  - GS4
+
+
+# ── High-value anchor terms (unconditional score additions) ──────────────────
+# These words alone are strong UPSC signals — add flat bonus each time found.
+topic_anchors:
+  inflation:              15
+  "fiscal deficit":       15
+  "monetary policy":      15
+  gdp:                    15
+  cpi:                    15
+  wpi:                    15
+  vaccine:                12
+  "net zero":             12
+  "sustainable energy":   12
+  "menstrual leave":      18
+  "gender equality":      12
+  "workforce participation": 12
+  "right to privacy":     16
+  "right to die":         16
+  "passive euthanasia":   16
+  "eez":                  12
+  "exclusive economic zone": 12
+  "uniform civil code":   18
+  "basic structure":      18
+  "collegium system":     18
+  "article 356":          16
+  crispr:                 12
+  "string of pearls":     14
+  "two-state solution":   14
+
+
+# ── Scheme signal words (3+ hits adds bonus) ──────────────────────────────────
+scheme_signals:
+  - crore
+  - lakh
+  - beneficiar
+  - yojana
+  - scheme
+  - mission
+  - programme
+  - allocated
+  - sanctioned
+  - target
+  - coverage
+  - enrolment
+
+
+# ── Known national institutions (mention adds flat bonus) ─────────────────────
+institutions:
+  - supreme court
+  - parliament
+  - rbi
+  - sebi
+  - election commission
+  - niti aayog
+  - cag
+  - lokpal
+  - ngt
+  - cci
+  - nhrc
+  - ncw
+  - ministry of
+  - department of
+  - cabinet committee
+  - prs india
+  - pib
+
+
+# ── State anchor terms for federalism scoring ──────────────────────────────────
+state_anchors:
+  - kerala
+  - tamil nadu
+  - uttar pradesh
+  - bihar
+  - punjab
+  - maharashtra
+  - west bengal
+  - karnataka
+  - telangana
+  - odisha
+  - rajasthan
+  - gujarat
+  - madhya pradesh
+  - assam
+  - jharkhand
+  - chhattisgarh
+  - himachal pradesh
+  - uttarakhand
+  - manipur
+  - nagaland
+
+national_institutions_title:
+  - supreme court
+  - centre
+  - central government
+  - rbi
+  - niti aayog
+  - parliament
+  - sc
+  - hc
+  - cji
+  - ministry of

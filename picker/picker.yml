@@ -1,0 +1,206 @@
+# picker/picker.yml
+# ─────────────────────────────────────────────────────────────────────────────
+# COPY TO: .github/workflows/picker.yml
+#
+# WHAT IT DOES
+# ─────────────
+#   1. Reads shortlist_*.json from data/filtered/YYYY-MM-DD/
+#   2. Sends all articles to LLM via AIPOOL
+#   3. LLM selects top_n most UPSC-relevant articles with upsc_angle notes
+#   4. Writes toplist_*.json + toplist_*.csv
+#   5. Commits output back to repo
+#
+# DEPENDENCIES
+# ─────────────
+#   - filter workflow must have run first (shortlist_*.json must exist)
+#   - AIPOOL secrets must be configured (GROQ_API_1 etc.)
+#
+# CHAIN (wire up later)
+# ──────────────────────
+#   fetch → classify → filter → picker
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: Pick Top Articles
+
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "Date folder (YYYY-MM-DD). Leave blank for today."
+        required: false
+        default: ""
+      top_n:
+        description: "Number of top picks (overrides config). Leave blank to use picker.yaml default."
+        required: false
+        default: ""
+      verbose:
+        description: "Enable verbose/debug logging"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+  # ── Auto-chain from filter workflow (wire up later) ───────────────────────
+  # workflow_run:
+  #   workflows: ["Filter Articles"]
+  #   types: [completed]
+
+jobs:
+  pick:
+    name: Select top UPSC articles via LLM
+    runs-on: ubuntu-latest
+
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success')
+
+    permissions:
+      contents: write
+
+    steps:
+      # ── 1. Checkout ───────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # ── 2. Python ─────────────────────────────────────────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: |
+            picker/requirements.txt
+            AIPOOL/requirements.txt
+
+      # ── 3. Pull LFS data ──────────────────────────────────────────────────
+      - name: Pull Git LFS data
+        run: |
+          git lfs install
+          git lfs pull
+
+      # ── 4. Install dependencies ───────────────────────────────────────────
+      - name: Install dependencies
+        run: |
+          pip install -r picker/requirements.txt
+          pip install -r AIPOOL/requirements.txt
+
+      # ── 5. Verify input exists ────────────────────────────────────────────
+      - name: Verify shortlist input
+        run: |
+          TODAY=$(TZ="Asia/Kolkata" date +"%Y-%m-%d")
+          INPUT_DATE="${{ github.event.inputs.date }}"
+          TARGET="${INPUT_DATE:-$TODAY}"
+          echo "TARGET_DATE=$TARGET" >> $GITHUB_ENV
+          echo "Target date: $TARGET"
+
+          if [ ! -d "data/filtered/$TARGET" ]; then
+            echo "ERROR: data/filtered/$TARGET not found. Run filter workflow first."
+            ls data/filtered/ 2>/dev/null || echo "  (data/filtered/ is empty)"
+            exit 1
+          fi
+
+          COUNT=$(ls data/filtered/$TARGET/shortlist_*.json 2>/dev/null | wc -l)
+          if [ "$COUNT" -eq 0 ]; then
+            echo "ERROR: No shortlist_*.json in data/filtered/$TARGET"
+            echo "Run the Filter Articles workflow first."
+            exit 1
+          fi
+
+          LATEST=$(ls data/filtered/$TARGET/shortlist_*.json | sort | tail -1)
+          echo "OK: shortlist found — $(basename $LATEST)"
+
+      # ── 6. Run picker ─────────────────────────────────────────────────────
+      - name: Run picker
+        env:
+          # ── LLM keys ──────────────────────────────────────────────────────
+          GROQ_API_1:       ${{ secrets.GROQ_API_1 }}
+          GROQ_API_2:       ${{ secrets.GROQ_API_2 }}
+          GROQ_API_3:       ${{ secrets.GROQ_API_3 }}
+          GROQ_API_4:       ${{ secrets.GROQ_API_4 }}
+          GEMINI_API_1:     ${{ secrets.GEMINI_API_1 }}
+          GEMINI_API_2:     ${{ secrets.GEMINI_API_2 }}
+          GEMINI_API_3:     ${{ secrets.GEMINI_API_3 }}
+          OPENROUTER_API_1: ${{ secrets.OPENROUTER_API_1 }}
+          OPENROUTER_API_2: ${{ secrets.OPENROUTER_API_2 }}
+          CEREBRAS_API_1:   ${{ secrets.CEREBRAS_API_1 }}
+          ANTHROPIC_API_1:  ${{ secrets.ANTHROPIC_API_1 }}
+          OPENAI_API_1:     ${{ secrets.OPENAI_API_1 }}
+        run: |
+          FLAGS="--data-dir data --date $TARGET_DATE"
+
+          if [ -n "${{ github.event.inputs.top_n }}" ]; then
+            FLAGS="$FLAGS --top-n ${{ github.event.inputs.top_n }}"
+          fi
+
+          if [ "${{ github.event.inputs.verbose }}" = "true" ]; then
+            FLAGS="$FLAGS --verbose"
+          fi
+
+          python picker/picker.py $FLAGS
+
+      # ── 7. Commit output ──────────────────────────────────────────────────
+      - name: Commit toplist output
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          TIMESTAMP=$(TZ="Asia/Kolkata" date '+%H:%M IST')
+
+          echo ""
+          echo "── Output files ──"
+          ls -lh data/filtered/$TARGET_DATE/toplist_*.json \
+                 data/filtered/$TARGET_DATE/toplist_*.csv 2>/dev/null \
+            || echo "  WARNING: no toplist files found"
+
+          for f in data/filtered/$TARGET_DATE/toplist_*.json \
+                   data/filtered/$TARGET_DATE/toplist_*.csv \
+                   data/api_metrics/*.json; do
+            if [ -f "$f" ]; then
+              git add "$f"
+              echo "  staged: $f"
+            fi
+          done
+
+          if git diff --cached --quiet; then
+            echo "Nothing new to commit."
+            git commit --allow-empty -m "picker: $TARGET_DATE at $TIMESTAMP [skip ci]"
+          else
+            git commit -m "picker: $TARGET_DATE at $TIMESTAMP [skip ci]"
+          fi
+
+          git push
+          echo "✅ Pushed toplist for $TARGET_DATE at $TIMESTAMP"
+
+      # ── 8. Upload artifact ────────────────────────────────────────────────
+      - name: Upload toplist as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: toplist-${{ env.TARGET_DATE }}
+          path: |
+            data/filtered/${{ env.TARGET_DATE }}/toplist_*.json
+            data/filtered/${{ env.TARGET_DATE }}/toplist_*.csv
+          retention-days: 7
+          if-no-files-found: warn
+
+      # ── 9. Summary ────────────────────────────────────────────────────────
+      - name: Print summary
+        if: always()
+        run: |
+          echo "===== Picker Output Summary ====="
+          for f in data/filtered/$TARGET_DATE/toplist_*.csv; do
+            [ -f "$f" ] || continue
+            echo "File: $(basename $f)"
+            TOTAL=$(tail -n +2 "$f" | wc -l)
+            echo "  Articles selected: $TOTAL"
+            echo "  Top picks:"
+            tail -n +2 "$f" | head -5 | cut -d',' -f1,2,3,5 | \
+              while IFS=, read rank art_num gs title; do
+                echo "    [$rank] $gs — $title"
+              done
+          done

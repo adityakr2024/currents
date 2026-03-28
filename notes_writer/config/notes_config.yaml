@@ -1,0 +1,85 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# notes_writer/config/notes_config.yaml
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Engine toggles ────────────────────────────────────────────────────────────
+# CLI flags always override config: --no-sumy --no-grounding --no-llm --no-hindi
+engines:
+  sumy:
+    enabled: true
+  grounder:
+    enabled: true
+  llm:
+    enabled: true
+  hindi:
+    enabled: true
+
+# ── Input ─────────────────────────────────────────────────────────────────────
+input:
+  min_fulltext_chars: 800
+  max_chars_before_compression: 3500
+  compression_sentences: 15
+
+# ── Grounder ──────────────────────────────────────────────────────────────────
+grounder:
+  max_results_per_query: 3
+  snippet_max_chars: 300
+  max_grounding_chars: 1800
+  data_query_papers: ["GS1", "GS3", "GS3+GS4", "GS2+GS3"]
+
+# ── LLM ───────────────────────────────────────────────────────────────────────
+llm:
+  module_name: "notes_writer"
+  max_tokens_english: 2000
+  max_tokens_hindi: 2000
+  max_attempts: 3
+
+# ── Notes content ─────────────────────────────────────────────────────────────
+content:
+  mains_questions_count: 2
+  prelims_facts_count: 4
+  key_dimensions_count: 4
+
+# ── Translation providers ─────────────────────────────────────────────────────
+# CLI: --no-indictrans2  --no-bhashini  --no-libretranslate  --no-llm-translate
+translation:
+  indictrans2:
+    enabled: false   # disabled — no HF_API_KEY available
+    priority: 2
+    model: "ai4bharat/indictrans2-en-indic-1B"
+    endpoint: "https://router.huggingface.co/hf-inference/models/{model}"
+    src_lang: "eng_Latn"
+    tgt_lang: "hin_Deva"
+    timeout_seconds: 30
+    max_retries: 2
+
+  bhashini:
+    enabled: false   # disabled — no BHASHINI_* keys available
+    priority: 1
+    config_endpoint: "https://meity-auth.ulcacontrib.org/ulca/apis/v0/model/getModelsPipeline"
+    pipeline_id: "64392f96daac500b55c543cd"
+    source_language: "en"
+    target_language: "hi"
+    timeout_seconds: 30
+    max_retries: 2
+
+  libretranslate:
+    enabled: false   # disabled — no LIBRETRANSLATE_API_KEY available
+    priority: 3
+    endpoint: "https://libretranslate.com/translate"
+    source: "en"
+    target: "hi"
+    timeout_seconds: 20
+    max_retries: 1
+
+  llm_fallback:
+    enabled: true
+    priority: 4
+    max_tokens: 2000
+    max_attempts: 2
+
+# ── Output ────────────────────────────────────────────────────────────────────
+output:
+  save_json: true
+  save_csv: true
+  csv_list_delimiter: " | "

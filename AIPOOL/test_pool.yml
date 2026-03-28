@@ -1,0 +1,144 @@
+# AIPOOL/test_pool.yml
+# ─────────────────────────────────────────────────────────────────────────────
+# COPY TO: .github/workflows/test_pool.yml
+#
+# Manual health check — run before any pipeline day.
+#
+# WHAT IT DOES
+# ─────────────
+#   1. Checks out repo
+#   2. Installs AIPOOL dependencies
+#   3. Tests every configured key — one call each
+#      LLM keys    → "Reply with exactly one word: OK"
+#      Search keys → "India Supreme Court landmark judgments"
+#   4. Adds inter-call delay per provider (fixes OpenRouter 429 on health check)
+#   5. Saves health_check_YYYY-MM-DD.json and commits to repo
+#   6. Exits 1 (red ✗ in Actions) if any key fails
+#
+# TRIGGER
+# ────────
+#   Actions → "AIPOOL — Health Check" → Run workflow
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: AIPOOL — Health Check
+
+on:
+  workflow_dispatch:
+    inputs:
+      providers:
+        description: "LLM providers to test (space-separated, blank = all). E.g: groq gemini"
+        required: false
+        default: ""
+      search_providers:
+        description: "Search providers to test (space-separated, blank = all). E.g: tavily"
+        required: false
+        default: ""
+      verbose:
+        description: "Show response preview in logs"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+jobs:
+  health-check:
+    name: Test all API keys
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: AIPOOL/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r AIPOOL/requirements.txt
+
+      - name: Run health check
+        env:
+          # ── Groq ───────────────────────────────────────────────────────
+          GROQ_API_1:        ${{ secrets.GROQ_API_1 }}
+          GROQ_API_2:        ${{ secrets.GROQ_API_2 }}
+          GROQ_API_3:        ${{ secrets.GROQ_API_3 }}
+          GROQ_API_4:        ${{ secrets.GROQ_API_4 }}
+          GROQ_API_5:        ${{ secrets.GROQ_API_5 }}
+          # ── Gemini (add as many rows as you have keys) ────────────────
+          GEMINI_API_1:      ${{ secrets.GEMINI_API_1 }}
+          GEMINI_API_2:      ${{ secrets.GEMINI_API_2 }}
+          GEMINI_API_3:      ${{ secrets.GEMINI_API_3 }}
+          GEMINI_API_4:      ${{ secrets.GEMINI_API_4 }}
+          GEMINI_API_5:      ${{ secrets.GEMINI_API_5 }}
+          # ── OpenRouter ─────────────────────────────────────────────────
+          OPENROUTER_API_1:  ${{ secrets.OPENROUTER_API_1 }}
+          OPENROUTER_API_2:  ${{ secrets.OPENROUTER_API_2 }}
+          # ── Cerebras ───────────────────────────────────────────────────
+          CEREBRAS_API_1:    ${{ secrets.CEREBRAS_API_1 }}
+          CEREBRAS_API_2:    ${{ secrets.CEREBRAS_API_2 }}
+          # ── Anthropic ──────────────────────────────────────────────────
+          ANTHROPIC_API_1:   ${{ secrets.ANTHROPIC_API_1 }}
+          # ── OpenAI ─────────────────────────────────────────────────────
+          OPENAI_API_1:      ${{ secrets.OPENAI_API_1 }}
+          # ── Tavily (search grounding) ───────────────────────────────────
+          TAVILY_API_1:      ${{ secrets.TAVILY_API_1 }}
+          TAVILY_API_2:      ${{ secrets.TAVILY_API_2 }}
+          TAVILY_API_3:      ${{ secrets.TAVILY_API_3 }}
+          TAVILY_API_4:      ${{ secrets.TAVILY_API_4 }}
+          TAVILY_API_5:      ${{ secrets.TAVILY_API_5 }}
+          # ── Serper — Google Search ─────────────────────────────────────
+          SERPER_API_1:      ${{ secrets.SERPER_API_1 }}
+          SERPER_API_2:      ${{ secrets.SERPER_API_2 }}
+          SERPER_API_3:      ${{ secrets.SERPER_API_3 }}
+          # ── Future: Brave ───────────────────────────────────────────────
+          # BRAVE_API_1:     ${{ secrets.BRAVE_API_1 }}
+        run: |
+          FLAGS="--data-dir data"
+
+          if [ -n "${{ github.event.inputs.providers }}" ]; then
+            FLAGS="$FLAGS --providers ${{ github.event.inputs.providers }}"
+          fi
+
+          if [ -n "${{ github.event.inputs.search_providers }}" ]; then
+            FLAGS="$FLAGS --search-providers ${{ github.event.inputs.search_providers }}"
+          fi
+
+          if [ "${{ github.event.inputs.verbose }}" = "true" ]; then
+            FLAGS="$FLAGS --verbose"
+          fi
+
+          python AIPOOL/test_pool.py $FLAGS
+
+      - name: Commit health check metrics
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          TODAY=$(TZ="Asia/Kolkata" date +"%Y-%m-%d")
+          TIMESTAMP=$(TZ="Asia/Kolkata" date '+%H:%M IST')
+
+          git add "data/api_metrics/health_check_${TODAY}.json" 2>/dev/null || true
+
+          if git diff --cached --quiet; then
+            echo "No new metrics to commit."
+          else
+            git commit -m "aipool: health check $TODAY at $TIMESTAMP [skip ci]"
+            git push
+          fi
+
+      - name: Upload health check artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aipool-health-check-${{ github.run_id }}
+          path: data/api_metrics/health_check_*.json
+          retention-days: 30
+          if-no-files-found: warn

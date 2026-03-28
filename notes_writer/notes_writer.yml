@@ -1,0 +1,195 @@
+# notes_writer/notes_writer.yml
+# Copy to: .github/workflows/notes_writer.yml
+# ─────────────────────────────────────────────────────────────────────────────
+# INPUT:  data/filtered/YYYY-MM-DD/toplist_*.json
+#         data/YYYY-MM-DD/classified_*.csv  (full_text join)
+# OUTPUT: data/notes/YYYY-MM-DD/notes_*.json
+#         data/notes/YYYY-MM-DD/notes_*.csv
+#         data/notes/YYYY-MM-DD/needs_retry_*.csv  (if any articles failed)
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: "Write Notes"
+
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "Date (YYYY-MM-DD). Blank = today IST."
+        required: false
+        default: ""
+      no_grounding:
+        description: "Disable Tavily grounding?"
+        default: "false"
+        type: choice
+        options: ["false","true"]
+      no_hindi:
+        description: "Skip Hindi translation?"
+        default: "false"
+        type: choice
+        options: ["false","true"]
+      no_llm:
+        description: "Disable LLM? (extractive output only)"
+        default: "false"
+        type: choice
+        options: ["false","true"]
+      verbose:
+        description: "Debug logging"
+        default: "false"
+        type: choice
+        options: ["false","true"]
+
+  workflow_call:
+    inputs:
+      date:
+        type: string
+        default: ""
+      no_grounding:
+        type: string
+        default: "false"
+      no_hindi:
+        type: string
+        default: "false"
+      no_llm:
+        type: string
+        default: "false"
+      verbose:
+        type: string
+        default: "false"
+
+concurrency:
+  group: notes-writer-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  write_notes:
+    name: "Generate bilingual UPSC notes"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+          fetch-depth: 0
+
+      - name: Pull latest commits
+        run: git pull --rebase origin "${{ github.ref_name }}"
+
+      - name: Pull Git LFS data
+        run: |
+          git lfs install
+          git lfs pull
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            notes_writer/requirements.txt
+            AIPOOL/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          pip install -r notes_writer/requirements.txt
+          pip install -r AIPOOL/requirements.txt
+          python -m nltk.downloader punkt punkt_tab stopwords --quiet
+
+      - name: Resolve target date
+        run: |
+          D="${{ inputs.date || github.event.inputs.date }}"
+          TODAY=$(TZ="Asia/Kolkata" date +"%Y-%m-%d")
+          echo "TARGET_DATE=${D:-$TODAY}" >> $GITHUB_ENV
+
+      - name: Verify toplist exists
+        run: |
+          COUNT=$(ls data/filtered/$TARGET_DATE/toplist_*.json 2>/dev/null | wc -l)
+          [ "$COUNT" -gt 0 ] || { echo "ERROR: No toplist in data/filtered/$TARGET_DATE"; exit 1; }
+
+      - name: Run notes writer
+        env:
+          GROQ_API_1:       ${{ secrets.GROQ_API_1 }}
+          GROQ_API_2:       ${{ secrets.GROQ_API_2 }}
+          GROQ_API_3:       ${{ secrets.GROQ_API_3 }}
+          GROQ_API_4:       ${{ secrets.GROQ_API_4 }}
+          GEMINI_API_1:     ${{ secrets.GEMINI_API_1 }}
+          GEMINI_API_2:     ${{ secrets.GEMINI_API_2 }}
+          GEMINI_API_3:     ${{ secrets.GEMINI_API_3 }}
+          OPENROUTER_API_1: ${{ secrets.OPENROUTER_API_1 }}
+          OPENROUTER_API_2: ${{ secrets.OPENROUTER_API_2 }}
+          CEREBRAS_API_1:   ${{ secrets.CEREBRAS_API_1 }}
+          ANTHROPIC_API_1:  ${{ secrets.ANTHROPIC_API_1 }}
+          OPENAI_API_1:     ${{ secrets.OPENAI_API_1 }}
+          TAVILY_API_1:     ${{ secrets.TAVILY_API_1 }}
+          TAVILY_API_2:     ${{ secrets.TAVILY_API_2 }}
+          SERPER_API_1:     ${{ secrets.SERPER_API_1 }}
+          HF_API_KEY:             ${{ secrets.HF_API_KEY }}
+          BHASHINI_USER_ID:       ${{ secrets.BHASHINI_USER_ID }}
+          BHASHINI_ULCA_API_KEY:  ${{ secrets.BHASHINI_ULCA_API_KEY }}
+          BHASHINI_INFERENCE_KEY: ${{ secrets.BHASHINI_INFERENCE_KEY }}
+          LIBRETRANSLATE_API_KEY: ${{ secrets.LIBRETRANSLATE_API_KEY }}
+        run: |
+          FLAGS="--data-dir data --date $TARGET_DATE"
+          [ "${{ inputs.no_grounding || github.event.inputs.no_grounding }}" = "true" ] && FLAGS="$FLAGS --no-grounding"
+          [ "${{ inputs.no_hindi    || github.event.inputs.no_hindi    }}" = "true" ] && FLAGS="$FLAGS --no-hindi"
+          [ "${{ inputs.no_llm     || github.event.inputs.no_llm     }}" = "true" ] && FLAGS="$FLAGS --no-llm"
+          [ "${{ inputs.verbose    || github.event.inputs.verbose    }}" = "true" ] && FLAGS="$FLAGS --verbose"
+          python notes_writer/main.py $FLAGS
+
+      - name: Commit output
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          for f in data/notes/$TARGET_DATE/notes_*.json \
+                   data/notes/$TARGET_DATE/notes_*.csv  \
+                   data/notes/$TARGET_DATE/needs_retry_*.csv \
+                   data/api_metrics/*.json; do
+            [ -f "$f" ] && git add "$f" && echo "  staged: $f"
+          done
+          TS=$(TZ="Asia/Kolkata" date '+%H:%M IST')
+          if git diff --cached --quiet; then
+            git commit --allow-empty -m "notes: $TARGET_DATE at $TS [skip ci]"
+          else
+            git commit -m "notes: $TARGET_DATE at $TS [skip ci]"
+          fi
+          git pull --rebase --autostash origin "${{ github.ref_name }}"
+          git push
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: notes-${{ env.TARGET_DATE }}-run${{ github.run_number }}
+          path: |
+            data/notes/${{ env.TARGET_DATE }}/notes_*.json
+            data/notes/${{ env.TARGET_DATE }}/notes_*.csv
+            data/notes/${{ env.TARGET_DATE }}/needs_retry_*.csv
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Step summary
+        if: always()
+        run: |
+          echo "### Notes Writer — $TARGET_DATE" >> "$GITHUB_STEP_SUMMARY"
+          for f in data/notes/$TARGET_DATE/notes_*.json; do
+            [ -f "$f" ] || continue
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            jq -r '
+              "**\(.meta.articles_count) notes** | \(.meta.elapsed_seconds)s | retry: \(.meta.retry_count)\n",
+              "| Tier | Count |", "|------|------:|",
+              (.meta.generation_tiers | to_entries[] | "| \(.key) | \(.value) |"),
+              "", "| # | URL | Title | Tier |", "|---|-----|-------|------|",
+              (.notes[] | "| \(.rank) | \(.url) | \(.title[:60]) | \(.generation_tier) |")
+            ' "$f" >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+          done
+
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner, repo: context.repo.repo,
+              title: `Notes writer failed — ${new Date().toISOString().slice(0,10)}`,
+              body: `**Run:** [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})`,
+              labels: ['bug','automated'],
+            });

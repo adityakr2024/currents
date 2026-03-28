@@ -1,0 +1,198 @@
+# filter/filter.yml
+# ─────────────────────────────────────────────────────────────────────────────
+# STANDALONE WORKFLOW — for the filter module only.
+#
+# HOW TO ACTIVATE:
+#   Copy this file to your repo's .github/workflows/ folder:
+#     cp filter/filter.yml .github/workflows/filter.yml
+#
+# This file lives inside filter/ intentionally — it does nothing here.
+# GitHub Actions only picks up workflows from .github/workflows/.
+#
+# WHAT IT DOES:
+#   1. Checks out repo with LFS (classified_*.csv committed by classifier)
+#   2. Verifies input is real data, not an LFS pointer stub
+#   3. Installs PyYAML
+#   4. Runs filter.py against today's (or specified) dated folder
+#   5. Commits shortlist_*.csv and shortlist_*.json back to repo
+#   6. Uploads output as downloadable artifact (backup)
+#
+# DEPENDENCIES:
+#   Requires classified_*.csv to exist in data/YYYY-MM-DD/
+#   Run the classify workflow first, or chain it via workflow_run below.
+#
+# SCHEDULED CHAIN (when ready):
+#   fetch → classify → filter
+#   Each depends on the previous completing successfully.
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: Filter Articles
+
+on:
+  # ── Manual trigger ────────────────────────────────────────────────────────
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "Date folder to filter (YYYY-MM-DD). Leave blank for today."
+        required: false
+        default: ""
+      verbose:
+        description: "Enable verbose/debug logging"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+
+  # ── Auto-chain from classify workflow (wire up later) ─────────────────────
+  # Uncomment when ready. `name:` must match exactly the name: in classify.yml.
+  # workflow_run:
+  #   workflows: ["Classify Articles"]
+  #   types: [completed]
+
+  # ── Daily schedule (wire up later) ───────────────────────────────────────
+  # Set ~30 min after classify workflow runs.
+  # schedule:
+  #   - cron: "00 03 * * *"    # 03:00 UTC = 08:30 IST
+
+jobs:
+  filter:
+    name: Build ranked shortlist
+    runs-on: ubuntu-latest
+
+    # Skip if triggered by an upstream workflow that failed
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success')
+
+    # Required for git push back to repo
+    permissions:
+      contents: write
+
+    steps:
+      # ── 1. Checkout with LFS ──────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # ── 2. Pull actual LFS objects ────────────────────────────────────────
+      - name: Pull Git LFS data
+        run: |
+          git lfs install
+          git lfs pull
+
+      # ── 3. Set up Python ──────────────────────────────────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: filter/requirements.txt
+
+      # ── 4. Install dependencies ───────────────────────────────────────────
+      - name: Install dependencies
+        run: pip install -r filter/requirements.txt
+
+      # ── 5. Resolve target date and verify input exists ────────────────────
+      - name: Verify input data
+        run: |
+          TODAY=$(TZ="Asia/Kolkata" date +"%Y-%m-%d")
+          INPUT_DATE="${{ github.event.inputs.date }}"
+          TARGET="${INPUT_DATE:-$TODAY}"
+          echo "TARGET_DATE=$TARGET" >> $GITHUB_ENV
+          echo "Target date: $TARGET"
+
+          if [ ! -d "data/$TARGET" ]; then
+            echo "ERROR: data/$TARGET not found."
+            echo "Available dated folders:"
+            ls data/ 2>/dev/null || echo "  (data/ is empty or missing)"
+            exit 1
+          fi
+
+          # Check for classified file — filter depends on classifier output
+          COUNT=$(ls data/$TARGET/classified_*.csv 2>/dev/null | wc -l)
+          if [ "$COUNT" -eq 0 ]; then
+            echo "ERROR: No classified_*.csv found in data/$TARGET"
+            echo "Run the Classify Articles workflow first."
+            exit 1
+          fi
+
+          # Verify not an LFS pointer stub
+          LATEST=$(ls data/$TARGET/classified_*.csv | sort | tail -1)
+          FIRST_LINE=$(head -n 1 "$LATEST")
+          if [ "$FIRST_LINE" = "version https://git-lfs.github.com/spec/v1" ]; then
+            echo "ERROR: $LATEST is still a Git LFS pointer."
+            echo "Ensure LFS objects are pulled before filtering."
+            exit 1
+          fi
+
+          echo "OK: $COUNT classified file(s) found — latest: $(basename $LATEST)"
+
+      # ── 6. Run filter ─────────────────────────────────────────────────────
+      - name: Run filter
+        run: |
+          FLAGS="--data-dir data --date $TARGET_DATE"
+          if [ "${{ github.event.inputs.verbose }}" = "true" ]; then
+            FLAGS="$FLAGS --verbose"
+          fi
+          python filter/filter.py $FLAGS
+
+      # ── 7. Commit shortlist back to repo ──────────────────────────────────
+      # [skip ci] prevents triggering another workflow run.
+      - name: Commit shortlist output
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add \
+            "data/filtered/$TARGET_DATE/shortlist_"*.csv \
+            "data/filtered/$TARGET_DATE/shortlist_"*.json \
+            2>/dev/null || true
+
+          TIMESTAMP=$(TZ="Asia/Kolkata" date '+%H:%M IST')
+
+          if git diff --cached --quiet; then
+            echo "Nothing new to commit — shortlist already up to date."
+            git commit --allow-empty -m "filter: $TARGET_DATE at $TIMESTAMP [skip ci]"
+          else
+            git commit -m "filter: $TARGET_DATE at $TIMESTAMP [skip ci]"
+          fi
+
+          git push
+          echo "Pushed shortlist for $TARGET_DATE at $TIMESTAMP"
+
+      # ── 8. Upload as artifact (backup) ────────────────────────────────────
+      - name: Upload shortlist as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: shortlist-${{ env.TARGET_DATE }}
+          path: |
+            data/filtered/${{ env.TARGET_DATE }}/shortlist_*.csv
+            data/filtered/${{ env.TARGET_DATE }}/shortlist_*.json
+          retention-days: 7
+          if-no-files-found: warn
+
+      # ── 9. Summary ────────────────────────────────────────────────────────
+      - name: Print summary
+        if: always()
+        run: |
+          echo "===== Filter Output Summary ====="
+          for f in data/filtered/$TARGET_DATE/shortlist_*.csv; do
+            [ -f "$f" ] || continue
+            echo "File : $(basename $f)"
+            TOTAL=$(tail -n +2 "$f" | wc -l)
+            echo "  Shortlisted : $TOTAL articles"
+
+            # GS distribution — find gs_paper column index
+            HEADER=$(head -1 "$f")
+            COL=$(echo "$HEADER" | tr ',' '\n' | grep -n "^best_syllabus_paper$" | cut -d: -f1)
+            if [ -n "$COL" ]; then
+              echo "  GS breakdown:"
+              tail -n+2 "$f" | cut -d',' -f$COL | sort | uniq -c | sort -rn | \
+                while read count paper; do echo "    $paper : $count"; done
+            fi
+          done

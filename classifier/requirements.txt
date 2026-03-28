@@ -1,0 +1,4 @@
+# classifier/requirements.txt
+# Minimal dependencies — classifier is intentionally lightweight.
+
+PyYAML>=6.0.1

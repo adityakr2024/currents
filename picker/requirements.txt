@@ -1,0 +1,9 @@
+# picker/requirements.txt
+# Direct dependencies for picker module.
+# NOTE: also install AIPOOL/requirements.txt (requests, urllib3, certifi)
+#       The picker.yml workflow does this automatically.
+#       For local dev: pip install -r picker/requirements.txt -r AIPOOL/requirements.txt
+
+PyYAML>=6.0.1
+# Python >= 3.9 required (type hints use built-in list/dict generics)
+# from __future__ import annotations ensures 3.8 compat at runtime

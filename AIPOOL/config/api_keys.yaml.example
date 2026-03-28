@@ -1,0 +1,90 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# AIPOOL/config/api_keys.yaml.example — LOCAL DEVELOPMENT ONLY
+#
+# SETUP:
+#   cp config/api_keys.yaml.example config/api_keys.yaml
+#   Fill in real keys in api_keys.yaml
+#
+# SECURITY:
+#   api_keys.yaml is in .gitignore — NEVER committed.
+#   This example file has NO real keys and IS committed.
+#
+# KEY NAMING:
+#   key_id must match the env_key_pattern in api_pool.yaml.
+#   provider must match a key in providers or search_providers.
+# ─────────────────────────────────────────────────────────────────────────────
+
+keys:
+
+  # ── LLM: Groq (tried first — fastest free tier) ──────────────────────────
+  - key_id:   "GROQ_API_1"
+    provider: "groq"
+    secret:   "gsk_REPLACE_WITH_YOUR_GROQ_KEY"
+
+  - key_id:   "GROQ_API_2"
+    provider: "groq"
+    secret:   "gsk_REPLACE_WITH_SECOND_GROQ_KEY"
+
+  # ── LLM: Gemini (add as many as you have — GEMINI_API_1 through N) ─────
+  - key_id:   "GEMINI_API_1"
+    provider: "gemini"
+    secret:   "AIza_REPLACE_WITH_YOUR_GEMINI_KEY_1"
+
+  - key_id:   "GEMINI_API_2"
+    provider: "gemini"
+    secret:   "AIza_REPLACE_WITH_YOUR_GEMINI_KEY_2"
+
+  - key_id:   "GEMINI_API_3"
+    provider: "gemini"
+    secret:   "AIza_REPLACE_WITH_YOUR_GEMINI_KEY_3"
+
+  # - key_id:   "GEMINI_API_4"
+  #   provider: "gemini"
+  #   secret:   "AIza_REPLACE_WITH_YOUR_GEMINI_KEY_4"
+
+  # ── LLM: OpenRouter ──────────────────────────────────────────────────────
+  - key_id:   "OPENROUTER_API_1"
+    provider: "openrouter"
+    secret:   "sk-or-REPLACE_WITH_YOUR_OPENROUTER_KEY"
+
+  # ── LLM: Cerebras ────────────────────────────────────────────────────────
+  # - key_id:   "CEREBRAS_API_1"
+  #   provider: "cerebras"
+  #   secret:   "REPLACE_WITH_YOUR_CEREBRAS_KEY"
+
+  # ── LLM: Anthropic ───────────────────────────────────────────────────────
+  # - key_id:   "ANTHROPIC_API_1"
+  #   provider: "anthropic"
+  #   secret:   "sk-ant-REPLACE_WITH_YOUR_ANTHROPIC_KEY"
+
+  # ── LLM: OpenAI ──────────────────────────────────────────────────────────
+  # - key_id:   "OPENAI_API_1"
+  #   provider: "openai"
+  #   secret:   "sk-REPLACE_WITH_YOUR_OPENAI_KEY"
+
+  # ── SEARCH: Tavily (grounding for notes_writer) ──────────────────────────
+  - key_id:   "TAVILY_API_1"
+    provider: "tavily"
+    secret:   "tvly-REPLACE_WITH_YOUR_TAVILY_KEY"
+
+  - key_id:   "TAVILY_API_2"
+    provider: "tavily"
+    secret:   "tvly-REPLACE_WITH_SECOND_TAVILY_KEY"
+
+  # ── SEARCH: Serper — Google Search (add as many as you have) ────────────
+  - key_id:   "SERPER_API_1"
+    provider: "serper"
+    secret:   "REPLACE_WITH_YOUR_SERPER_KEY_1"
+
+  - key_id:   "SERPER_API_2"
+    provider: "serper"
+    secret:   "REPLACE_WITH_YOUR_SERPER_KEY_2"
+
+  # - key_id:   "SERPER_API_3"
+  #   provider: "serper"
+  #   secret:   "REPLACE_WITH_YOUR_SERPER_KEY_3"
+
+  # ── SEARCH: Brave (future) ───────────────────────────────────────────────
+  # - key_id:   "BRAVE_API_1"
+  #   provider: "brave"
+  #   secret:   "REPLACE_WITH_YOUR_BRAVE_KEY"

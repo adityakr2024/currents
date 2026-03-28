@@ -1,0 +1,1487 @@
+exclude_patterns:
+- \bipl\b
+- \bcricket\b
+- \bbollywood\b
+- \bfilm\s+(star|actor|actress|award|review|release|premiere|sequel|trailer)\b
+- \b(bollywood|tollywood|kollywood)\s+film\b
+- \bcinema\b
+- \bbox\s+office\b
+- \bwedding\b
+- \bdivorce\b
+- \bbreakup\b
+- \bviral\s+(video|post|tweet|meme|content|reel|sensation|clip)\b
+- \bmeme\b
+- \btrending\b
+- \bfollowers\b
+- \bcelebrity\b
+- \bactor\s+(arrested|injured|married|dating|scandal)\b
+- \b(bollywood|film|tv)\s+actor\b
+- \bactress\b
+- \bsinger\b
+- \bitem\s+song\b
+- \bott\s+release\b
+- \b(bjp|congress|aap|sp|bsp|tmc|ncp|shiv\s+sena)\s+slams\b
+- \b(modi|rahul|kejriwal|shah|mamata|yogi|fadnavis)\s+slams\b
+- \blashes\s+out\b
+- \bhits\s+out\b
+- \blashes\b.*\bpm\b
+- \blashes\b.*\bcm\b
+- \brally\b
+- \broadshow\b
+- \belection\s+speech\b
+- \bpolitical\s+vendetta\b
+- \bcheated\b
+- \brobbery\b
+- \bmurder\b
+- \bhit[- ]and[- ]run\b
+- \bbypolls?\b
+- \bvote\s+share\b
+- \bparty\s+symbol\b
+- \bexit\s+poll\b
+- \bopinion\s+poll\b
+- \bsensex\b
+- \bnifty\b
+- \bshare\s+price\b
+- \bhoroscope\b
+- \bastrology\b
+- \btop\s+\d+\s+(ways|tips|tricks|foods?|drinks?|places?\s+to\s+visit|tourist)\b
+- \bbest\s+\d+\s+(ways|tips|tricks|foods?|drinks?|restaurants?)\b
+- \bviral\s+story\b
+- \bhuman\s+interest\b
+- \b(clear(?:s|ed|ing)?|crack(?:s|ed)?)\s+upsc\b
+- \bweather\s+forecast\b
+- \btraffic\s+jam\b
+- \bchampions\s+league\b
+- \bfootball\s+league\b
+- \bfifa\b
+- \brecipe\b
+- \bfashion\s+week\b
+- \blifestyle\b
+- \bgossip\b
+output:
+  top_n: 30
+  review_n: 20
+  max_per_cluster: 3
+scoring:
+  classifier_weight: 0.3
+  syllabus_weight: 0.45
+  booster_weight: 0.15
+  hot_topic_weight: 0.1
+score_params:
+  keyword_hit_value: 5
+  min_topic_hits: 1
+  interdisciplinary_bonus: 5
+  booster_max: 35
+  hot_topic_max: 20
+  hot_topic_hit_value: 7
+hot_topics:
+- dpdp act
+- carbon border adjustment
+- quantum mission india
+- caste census
+- pm gati shakti
+- menstrual leave policy
+- deepfake regulation
+- spadex mission
+- lateral entry
+- cbam
+- delimitation 2026
+- voice of global south
+- civil services reform
+- same-sex marriage
+- global south leadership
+- arctic policy india
+- global minimum tax
+- green hydrogen mission
+- global stocktake
+- loss and damage fund
+- hybrid warfare
+- waqf amendment
+- digital personal data protection
+- pillar two tax
+- critical minerals
+- bioeconomy india
+- counter drone
+- india-canada diplomatic
+- ai governance framework
+- gene drive
+- china plus one
+- just transition
+- pm internship scheme
+- living will
+- advance directive
+- space docking
+- india-asean
+- mrna vaccine
+- india middle east europe corridor
+- semiconductor mission
+- simultaneous elections
+- plastic treaty
+- drone warfare
+- platform workers
+- theatre commands
+- blue economy
+- imec corridor
+- urban homelessness
+- agnipath scheme
+- gig workers
+- mangrove alliance
+- gig economy
+- unified pension scheme
+- viksit bharat
+- one nation one election
+- west asia war
+- iran-israel conflict
+- india west asia policy
+- removal of speaker
+- world happiness report
+- demographic dividend india
+- ai governance
+- new gdp series
+- index of industrial production
+- pakistan arms sales
+- operation sankalp
+- kavach system
+- great nicobar project
+- mahad satyagraha
+booster_terms:
+- term: basic structure doctrine
+  bonus: 20
+  gs_paper: GS2
+- term: constitution bench
+  bonus: 18
+  gs_paper: GS2
+- term: collegium system
+  bonus: 18
+  gs_paper: GS2
+- term: article 356
+  bonus: 16
+  gs_paper: GS2
+- term: president's rule
+  bonus: 14
+  gs_paper: GS2
+- term: anti-defection law
+  bonus: 14
+  gs_paper: GS2
+- term: tenth schedule
+  bonus: 14
+  gs_paper: GS2
+- term: uniform civil code
+  bonus: 18
+  gs_paper: GS2
+- term: one nation one election
+  bonus: 16
+  gs_paper: GS2
+- term: delimitation commission
+  bonus: 15
+  gs_paper: GS2
+- term: electoral bond
+  bonus: 16
+  gs_paper: GS2
+- term: electoral reform
+  bonus: 14
+  gs_paper: GS2
+- term: digital personal data protection
+  bonus: 15
+  gs_paper: GS2
+- term: right to privacy
+  bonus: 16
+  gs_paper: GS2
+- term: right to information
+  bonus: 13
+  gs_paper: GS2
+- term: cooperative federalism
+  bonus: 15
+  gs_paper: GS2
+- term: centre-state relations
+  bonus: 14
+  gs_paper: GS2
+- term: judicial review
+  bonus: 14
+  gs_paper: GS2
+- term: constitutional morality
+  bonus: 16
+  gs_paper: GS2
+- term: passive euthanasia
+  bonus: 16
+  gs_paper: GS2
+- term: living will
+  bonus: 14
+  gs_paper: GS2
+- term: right to die
+  bonus: 16
+  gs_paper: GS2
+- term: fundamental right
+  bonus: 12
+  gs_paper: GS2
+- term: indo-pacific strategy
+  bonus: 14
+  gs_paper: GS2
+- term: string of pearls
+  bonus: 16
+  gs_paper: GS2
+- term: two-state solution
+  bonus: 14
+  gs_paper: GS2
+- term: no first use
+  bonus: 16
+  gs_paper: GS2
+- term: nuclear doctrine
+  bonus: 16
+  gs_paper: GS2
+- term: india middle east europe corridor
+  bonus: 16
+  gs_paper: GS2
+- term: fiscal consolidation
+  bonus: 14
+  gs_paper: GS3
+- term: current account deficit
+  bonus: 14
+  gs_paper: GS3
+- term: monetary transmission
+  bonus: 14
+  gs_paper: GS3
+- term: insolvency and bankruptcy code
+  bonus: 15
+  gs_paper: GS3
+- term: sovereign green bond
+  bonus: 14
+  gs_paper: GS3
+- term: global minimum tax
+  bonus: 15
+  gs_paper: GS3
+- term: beps framework
+  bonus: 15
+  gs_paper: GS3
+- term: production linked incentive
+  bonus: 13
+  gs_paper: GS3
+- term: nagoya protocol
+  bonus: 16
+  gs_paper: GS3
+- term: paris agreement
+  bonus: 14
+  gs_paper: GS3
+- term: nationally determined contribution
+  bonus: 14
+  gs_paper: GS3
+- term: carbon credit market
+  bonus: 14
+  gs_paper: GS3
+- term: loss and damage fund
+  bonus: 16
+  gs_paper: GS3
+- term: kunming-montreal
+  bonus: 16
+  gs_paper: GS3
+- term: 30x30 target
+  bonus: 15
+  gs_paper: GS3
+- term: exclusive economic zone
+  bonus: 14
+  gs_paper: GS3
+- term: chandrayaan
+  bonus: 14
+  gs_paper: GS3
+- term: gaganyaan
+  bonus: 14
+  gs_paper: GS3
+- term: aditya-l1
+  bonus: 14
+  gs_paper: GS3
+- term: quantum computing
+  bonus: 13
+  gs_paper: GS3
+- term: crispr
+  bonus: 14
+  gs_paper: GS3
+- term: mrna vaccine
+  bonus: 14
+  gs_paper: GS3
+- term: semiconductor fab
+  bonus: 14
+  gs_paper: GS3
+- term: left wing extremism
+  bonus: 14
+  gs_paper: GS3
+- term: theatre command
+  bonus: 15
+  gs_paper: GS3
+- term: agnipath scheme
+  bonus: 15
+  gs_paper: GS3
+- term: nagara style
+  bonus: 14
+  gs_paper: GS1
+- term: dravida style
+  bonus: 14
+  gs_paper: GS1
+- term: bhakti movement
+  bonus: 13
+  gs_paper: GS1
+- term: sufi movement
+  bonus: 13
+  gs_paper: GS1
+- term: intangible cultural heritage
+  bonus: 14
+  gs_paper: GS1
+- term: world heritage site
+  bonus: 12
+  gs_paper: GS1
+- term: conflict of interest
+  bonus: 12
+  gs_paper: GS4
+- term: emotional intelligence
+  bonus: 11
+  gs_paper: GS4
+- term: citizen charter
+  bonus: 12
+  gs_paper: GS4
+- term: probity in governance
+  bonus: 14
+  gs_paper: GS4
+- term: bharatiya nyaya sanhita
+  bonus: 15
+  gs_paper: GS2
+- term: bns
+  bonus: 12
+  gs_paper: GS2
+- term: maternity leave
+  bonus: 14
+  gs_paper: GS2
+- term: energy security
+  bonus: 12
+  gs_paper: GS3
+- term: appellate tribunal
+  bonus: 12
+  gs_paper: GS2
+gs_papers:
+  GS1:
+    topics:
+    - name: Art Forms & Architecture
+      weight: 8
+      keywords:
+      - nagara
+      - vesara
+      - dravida
+      - shikhara
+      - gopuram
+      - mandapa
+      - vimana
+      - stupa
+      - chaitya
+      - rock cut architecture
+      - cave temple
+      - ajanta
+      - ellora
+      - pallava
+      - chola architecture
+      - hoysala
+      - vijayanagara
+      - mughal architecture
+      - indo-islamic architecture
+      - fresco
+      - miniature painting
+      - madhubani
+      - warli
+      - pattachitra
+      - classical dance
+      - bharatanatyam
+      - kathak
+      - odissi
+      - kuchipudi
+      - manipuri
+      - mohiniyattam
+      - sattriya
+      - classical music
+      - carnatic
+      - hindustani
+      - intangible heritage
+      - world heritage site
+      - asi monument
+      - bronze sculpture
+      - terracotta
+    - name: Indian Culture — Literature & Philosophy
+      weight: 7
+      keywords:
+      - vedic literature
+      - upanishad
+      - puranas
+      - epics ramayana mahabharata
+      - sangam literature
+      - bhakti literature
+      - sufi literature
+      - medieval literature
+      - folk tradition
+      - oral tradition
+      - philosophical school
+      - nyaya
+      - vaisheshika
+      - samkhya
+      - yoga philosophy
+      - vedanta
+      - jainism
+      - buddhism
+      - lokayata
+      - syncretic tradition
+    - name: Ancient & Medieval Indian History
+      weight: 7
+      keywords:
+      - harappan civilisation
+      - indus valley
+      - vedic age
+      - mauryan empire
+      - ashoka
+      - gupta period
+      - post-gupta
+      - tripartite struggle
+      - chola empire
+      - delhi sultanate
+      - mughal empire
+      - vijayanagara empire
+      - bahmanid
+      - maratha
+      - medieval trade
+      - silk route
+      - spice trade
+      - bhakti movement
+      - sufi movement
+      - syncretic culture
+    - name: Modern Indian History
+      weight: 9
+      keywords:
+      - british colonialism
+      - east india company
+      - charter act
+      - regulating act
+      - pitts india act
+      - permanent settlement
+      - ryotwari
+      - mahalwari
+      - drain of wealth
+      - deindustrialisation
+      - revolt of 1857
+      - sepoy mutiny
+      - first war of independence
+      - land revenue system
+      - peasant revolt
+      - indigo revolt
+      - deccan riots
+      - tribal uprising
+      - santhal rebellion
+      - munda uprising
+      - paika rebellion
+      - press in colonial india
+      - social reform movement
+      - sati abolition
+      - widow remarriage
+      - child marriage
+      - lord curzon
+      - partition of bengal
+      - swadeshi movement
+      - ilbert bill
+    - name: Freedom Struggle
+      weight: 10
+      keywords:
+      - indian national congress
+      - congress session
+      - moderates extremists
+      - home rule movement
+      - rowlatt act
+      - jallianwala bagh
+      - non-cooperation movement
+      - civil disobedience
+      - dandi march
+      - salt satyagraha
+      - quit india movement
+      - simon commission
+      - nehru report
+      - poorna swaraj
+      - cabinet mission
+      - partition of india
+      - subhas chandra bose
+      - indian national army
+      - ina trial
+      - revolutionary nationalism
+      - bhagat singh
+      - kakori conspiracy
+      - vaikom satyagraha
+      - women in freedom struggle
+      - role of peasants workers
+      - revolutionary movement
+      - gandhi irwin pact
+      - round table conference
+    - name: Post-Independence Consolidation
+      weight: 9
+      keywords:
+      - integration of princely states
+      - sardar patel
+      - linguistic reorganisation
+      - states reorganisation act
+      - green revolution
+      - white revolution
+      - operation flood
+      - land reforms post independence
+      - zamindari abolition
+      - community development programme
+      - five year plan
+      - planning commission
+      - non-aligned movement
+      - panchsheel
+      - national emergency 1975
+      - jp movement
+      - total revolution
+      - economic liberalisation 1991
+      - lpu policy
+      - pokhran nuclear test
+      - india-pakistan war
+      - indo-pak 1971
+    - name: World History
+      weight: 8
+      keywords:
+      - industrial revolution
+      - french revolution
+      - american revolution
+      - russian revolution
+      - bolshevik
+      - world war one
+      - treaty of versailles
+      - league of nations
+      - great depression
+      - world war two
+      - holocaust
+      - cold war
+      - decolonisation
+      - non-aligned
+      - suez crisis
+      - cuban missile
+      - vietnam war
+      - collapse of soviet union
+      - unification germany italy
+      - apartheid
+      - fall of berlin wall
+      - marshall plan
+      - nato formation
+      - united nations founding
+      - bretton woods
+      - universal declaration human rights
+    - name: Indian Society — Structure & Issues
+      weight: 9
+      keywords:
+      - caste system
+      - scheduled caste
+      - scheduled tribe
+      - obc backward class
+      - reservation policy
+      - affirmative action
+      - creamy layer
+      - mandal commission
+      - communalism
+      - secularism
+      - regionalism
+      - linguistic diversity
+      - religious pluralism
+      - syncretism
+      - social mobility
+      - urbanisation impact
+      - joint family
+      - changing family structure
+      - gender disparity
+      - women empowerment
+      - dowry
+      - honour killing
+      - female foeticide
+      - child marriage
+      - bonded labour
+      - child labour
+      - social reform
+      - poverty alleviation
+      - human development index
+      - digital divide
+      - mental health
+      - gig economy workers
+      - aging population
+      - demographic dividend
+      - internal migration
+      - tribal society
+      - nfhs survey
+      - census data
+      - total fertility rate
+      - population projection india
+      - demographic transition india
+      - fertility decline
+    - name: Physical Geography
+      weight: 8
+      keywords:
+      - monsoon mechanism
+      - southwest monsoon
+      - northeast monsoon
+      - el nino
+      - la nina
+      - indian ocean dipole
+      - western disturbances
+      - himalayan geography
+      - peninsular rivers
+      - himalayan rivers
+      - river basin
+      - flood plains
+      - delta formation
+      - soil types
+      - black soil regur
+      - alluvial soil
+      - laterite soil
+      - mineral deposits
+      - coal reserves
+      - iron ore
+      - oil fields
+      - seismic zone
+      - earthquake
+      - tsunami
+      - volcanic activity
+      - tropical cyclone
+      - glacier retreat
+      - continental shelf
+      - exclusive economic zone
+      - eez
+      - ocean current
+      - coral reef
+      - mangrove
+    - name: Human & Economic Geography
+      weight: 7
+      keywords:
+      - demographic transition
+      - population distribution
+      - migration pattern
+      - urbanisation
+      - smart city
+      - urban sprawl
+      - industrial region
+      - special economic zone
+      - agricultural pattern
+      - crop distribution
+      - irrigation canal
+      - groundwater depletion
+      - water scarcity
+      - land degradation
+      - desertification
+      - transport connectivity
+      - port development
+      - inland waterways
+      - north east india
+      - island territory
+      - andaman nicobar
+      - lakshadweep
+      - border area development
+      - critical minerals geography
+      - rare earth elements
+  GS2:
+    topics:
+    - name: Constitutional Framework
+      weight: 10
+      keywords:
+      - constitution of india
+      - constitutional amendment
+      - fundamental rights
+      - directive principles
+      - fundamental duties
+      - preamble
+      - basic structure
+      - judicial review
+      - separation of powers
+      - federalism
+      - centre-state relations
+      - inter-state relations
+      - article 356
+      - article 370
+      - emergency provisions
+      - constitutional morality
+      - constitutional remedy
+      - habeas corpus
+      - writ jurisdiction
+      - original jurisdiction
+      - appellate jurisdiction
+      - constitutional convention
+      - schedule
+      - eighth schedule
+      - ninth schedule
+      - tenth schedule
+      - constitutional body
+    - name: Parliament & State Legislature
+      weight: 9
+      keywords:
+      - parliament
+      - lok sabha
+      - rajya sabha
+      - speaker lok sabha
+      - chairman rajya sabha
+      - legislation process
+      - ordinary bill
+      - money bill
+      - finance bill
+      - constitutional amendment bill
+      - question hour
+      - zero hour
+      - joint sitting
+      - parliamentary committee
+      - standing committee
+      - public accounts committee
+      - estimates committee
+      - state legislature
+      - legislative assembly
+      - legislative council
+      - ordinance
+      - act notified
+      - anti-defection
+      - privilege motion
+      - censure motion
+      - no-confidence motion
+      - removal of speaker
+      - speaker removal motion
+      - mplads
+      - mplads fund
+      - guillotine motion
+      - question hour significance
+    - name: Executive & Judiciary
+      weight: 10
+      keywords:
+      - president of india
+      - council of ministers
+      - cabinet
+      - cabinet committee
+      - supreme court
+      - high court
+      - district court
+      - chief justice india
+      - cji
+      - constitution bench
+      - collegium system
+      - judicial activism
+      - public interest litigation
+      - pil
+      - suo motu
+      - judicial overreach
+      - separation of judiciary
+      - national judicial appointments
+      - njac
+      - fast track court
+      - lok adalat
+      - gram nyayalaya
+      - alternative dispute resolution
+      - arbitration
+      - consumer court
+      - national company law tribunal
+    - name: Federalism & Local Governance
+      weight: 9
+      keywords:
+      - panchayati raj
+      - 73rd amendment
+      - 74th amendment
+      - gram sabha
+      - gram panchayat
+      - panchayat samiti
+      - zila parishad
+      - municipal corporation
+      - municipal council
+      - nagar panchayat
+      - devolution of powers
+      - state finance commission
+      - district planning committee
+      - metropolitan planning committee
+      - inter-state council
+      - zonal council
+      - governor role
+      - state government
+      - cooperative federalism
+      - gst council
+      - finance commission
+      - centrally sponsored scheme
+      - css rationalization
+      - article 263
+      - article 280
+    - name: Statutory & Constitutional Bodies
+      weight: 8
+      keywords:
+      - election commission
+      - comptroller auditor general
+      - cag
+      - union public service commission
+      - finance commission
+      - niti aayog
+      - national human rights commission
+      - nhrc
+      - national commission women
+      - ncw
+      - national sc commission
+      - national st commission
+      - national obc commission
+      - lokpal
+      - lokayukta
+      - central vigilance commission
+      - cvc
+      - central bureau investigation
+      - cbi
+      - enforcement directorate
+      - sebi
+      - rbi
+      - trai
+      - cci
+      - national green tribunal
+      - ngt
+      - national disaster management authority
+      - ndma
+      - removal of cec
+      - chief election commissioner removal
+      - cec appointment process
+    - name: Government Schemes & Social Welfare
+      weight: 9
+      keywords:
+      - ayushman bharat
+      - pm-jan dhan
+      - pm-kisan
+      - pm awas yojana
+      - ujjwala yojana
+      - swachh bharat mission
+      - beti bachao beti padhao
+      - poshan abhiyan
+      - national nutrition mission
+      - skill india mission
+      - make in india
+      - digital india
+      - startup india
+      - standup india
+      - jal jeevan mission
+      - har ghar jal
+      - pm gram sadak yojana
+      - mnrega
+      - national social assistance
+      - one nation one ration card
+      - pm suraksha bima
+      - pm jeevan jyoti bima
+      - atal pension yojana
+      - national health mission
+      - polio eradication
+      - mission indradhanush
+      - e-shram portal
+      - pm street vendor
+      - pradhan mantri matsya sampada
+      - national apprenticeship
+    - name: International Relations
+      weight: 10
+      keywords:
+      - foreign policy
+      - bilateral relations
+      - multilateral diplomacy
+      - india-us relations
+      - india-china relations
+      - india-russia relations
+      - india-pakistan relations
+      - india-japan relations
+      - india-australia relations
+      - india-france relations
+      - india-uk relations
+      - india-israel relations
+      - india-uae relations
+      - india-saudi arabia
+      - india-bangladesh
+      - india-nepal
+      - india-sri lanka
+      - india-myanmar
+      - indo-pacific
+      - quad grouping
+      - brics summit
+      - sco summit
+      - g20 presidency
+      - asean summit
+      - saarc
+      - bimstec
+      - iora
+      - united nations
+      - unsc reform
+      - permanent membership
+      - p5 nations
+      - international sanctions
+      - strategic partnership
+      - mou bilateral
+      - treaty accord
+      - soft power
+      - diaspora diplomacy
+      - global south
+      - west asia policy
+      - act east policy
+      - neighbourhood first
+      - maritime security
+      - south china sea
+      - arctic council
+      - international court justice
+      - international law
+      - unsc resolution
+      - ceasefire resolution
+      - india co-sponsors
+      - india abstains
+      - india votes at un
+      - west asia crisis
+      - india-iran relations
+      - chabahar port
+      - india west asia
+      - india iran policy
+    - name: Social Justice & Rights
+      weight: 9
+      keywords:
+      - reservation policy
+      - affirmative action
+      - obc reservation
+      - ews reservation
+      - creamy layer
+      - sc st atrocities act
+      - forest rights act
+      - pesa act
+      - tribal rights
+      - women reservation act
+      - nari shakti vandan
+      - gender equality
+      - menstrual leave
+      - maternity benefit act
+      - maternity leave
+      - maternity rights
+      - adoptive mother
+      - equal remuneration
+      - workplace harassment
+      - posh act
+      - transgender persons act
+      - disability rights
+      - right to education
+      - mid day meal
+      - child rights
+      - juvenile justice
+      - protection children sexual offences
+      - pocso
+      - human trafficking
+      - bonded labour system
+      - child labour act
+      - care work
+      - unpaid care work
+      - women digital safety
+      - online safety women
+      - sex education policy india
+    - name: Health & Education Policy
+      weight: 15
+      keywords:
+      - national education policy
+      - nep 2020
+      - higher education
+      - university grants commission
+      - aicte
+      - national medical commission
+      - national health policy
+      - universal health coverage
+      - health infrastructure
+      - disease surveillance
+      - public health emergency
+      - disease outbreak
+      - epidemic
+      - endemic disease
+      - outbreak management
+      - health alert
+      - pandemic preparedness
+      - antimicrobial resistance
+      - mental health act
+      - drug pricing
+      - jan aushadhi
+      - medical devices regulation
+      - telemedicine
+      - national digital health mission
+      - right to health
+      - one health approach
+  GS3:
+    topics:
+    - name: Indian Economy — Macro & Fiscal
+      weight: 10
+      keywords:
+      - rbi
+      - gdp growth rate
+      - inflation rate
+      - consumer price index
+      - wholesale price index
+      - core inflation
+      - fiscal deficit
+      - revenue deficit
+      - primary deficit
+      - fiscal consolidation
+      - frbm act
+      - monetary policy committee
+      - repo rate
+      - reverse repo
+      - cash reserve ratio
+      - statutory liquidity ratio
+      - open market operations
+      - liquidity adjustment facility
+      - rbi monetary policy
+      - economic survey
+      - union budget
+      - budget allocation
+      - tax buoyancy
+      - gst revenue
+      - direct tax
+      - indirect tax
+      - disinvestment
+      - privatisation
+      - current account deficit
+      - balance of payments
+      - foreign exchange reserves
+      - rupee depreciation
+      - dollarisation
+      - capital account convertibility
+      - stagflation
+      - index of industrial production
+      - iip
+      - industrial output
+      - gdp base year
+      - new gdp series
+      - gdp rebasing
+    - name: Banking, Finance & Capital Markets
+      weight: 8
+      keywords:
+      - rbi
+      - banking sector
+      - non-performing asset
+      - npa
+      - stressed assets
+      - bank recapitalisation
+      - prompt corrective action
+      - insolvency bankruptcy code
+      - ibc resolution
+      - nbfc regulation
+      - shadow banking
+      - digital payment
+      - upi
+      - rupay card
+      - central bank digital currency
+      - cbdc
+      - cryptocurrency regulation
+      - capital market
+      - sebi regulation
+      - ipo
+      - bond market
+      - municipal bond
+      - sovereign green bond
+      - financial inclusion
+      - jan dhan account
+      - microfinance
+      - credit guarantee
+      - priority sector lending
+      - payment bank
+      - small finance bank
+    - name: Trade, Commerce & Investment
+      weight: 8
+      keywords:
+      - foreign direct investment
+      - fdi policy
+      - fii
+      - portfolio investment
+      - trade deficit
+      - export promotion
+      - import substitution
+      - free trade agreement
+      - fta negotiation
+      - regional comprehensive economic partnership
+      - rcep
+      - cepa
+      - preferential trade
+      - wto dispute
+      - anti-dumping
+      - safeguard measures
+      - supply chain resilience
+      - china plus one
+      - production linked incentive
+      - pli scheme
+      - ease of doing business
+      - logistics performance index
+      - national logistics policy
+      - single window clearance
+      - investment corridor
+      - industrial cluster
+    - name: Agriculture & Food Security
+      weight: 9
+      keywords:
+      - minimum support price
+      - msp
+      - procurement policy
+      - food corporation india
+      - fci
+      - public distribution system
+      - pds
+      - national food security act
+      - targeted pds
+      - direct benefit transfer
+      - zero budget natural farming
+      - natural farming
+      - organic farming
+      - soil health card
+      - crop insurance
+      - pm fasal bima yojana
+      - irrigation efficiency
+      - drip irrigation
+      - micro irrigation
+      - watershed management
+      - kisan credit card
+      - e-nam platform
+      - farmer producer organisation
+      - fpo
+      - agri export
+      - food processing industry
+      - cold chain
+      - agri infrastructure fund
+      - animal husbandry
+      - dairy development
+      - fisheries policy
+      - aquaculture
+      - blue revolution
+      - agroforestry
+      - climate-smart agriculture
+    - name: Infrastructure & Energy
+      weight: 12
+      keywords:
+      - national infrastructure pipeline
+      - pm gati shakti
+      - national master plan
+      - dedicated freight corridor
+      - dfc
+      - high speed rail
+      - metro rail
+      - bharatmala project
+      - sagarmala project
+      - inland waterways
+      - airport development
+      - port modernisation
+      - logistics hub
+      - multimodal connectivity
+      - renewable energy target
+      - solar mission
+      - wind energy
+      - green hydrogen
+      - national green hydrogen mission
+      - battery storage
+      - pumped hydro storage
+      - smart grid
+      - power distribution
+      - electricity act
+      - one nation one grid
+      - coal transition
+      - energy transition
+      - nuclear power
+      - thorium reactor
+      - hydropower
+      - bioenergy
+      - energy security
+      - energy supply
+      - gas supply
+      - gas grid
+      - gas pipeline
+      - oil supply
+      - oil price
+      - crude oil
+      - petroleum
+      - lng
+      - natural gas
+      - strait of hormuz
+      - energy hub
+      - energy infrastructure
+      - coal gasification
+      - coal power
+      - power sector
+      - electricity generation
+      - grid stability
+      - blackout
+      - power crisis
+      - fuel price
+      - fuel subsidy
+      - energy import
+      - energy diplomacy
+      - energy independence
+    - name: Science, Technology & Innovation
+      weight: 9
+      keywords:
+      - isro
+      - space mission
+      - launch vehicle
+      - chandrayaan mission
+      - gaganyaan mission
+      - aditya solar mission
+      - spadex docking
+      - drdo
+      - defence research
+      - missile technology
+      - hypersonic
+      - artificial intelligence
+      - ai regulation
+      - machine learning
+      - deep learning
+      - natural language processing
+      - quantum computing
+      - quantum communication
+      - quantum encryption
+      - semiconductor
+      - chip manufacturing
+      - photonics
+      - 5g rollout
+      - 6g research
+      - biotechnology
+      - gene editing
+      - crispr cas9
+      - genome sequencing
+      - synthetic biology
+      - biosafety
+      - nanotechnology
+      - advanced materials
+      - robotics
+      - drone technology
+      - electric vehicle
+      - ev battery
+      - hydrogen fuel cell
+      - nuclear fusion
+      - particle physics
+      - ai governance india
+      - ai national security
+      - project insight tax
+      - artificial intelligence governance
+      - ai powered governance
+    - name: Environment & Climate Change
+      weight: 10
+      keywords:
+      - climate change impact
+      - global warming
+      - greenhouse gas
+      - carbon emission
+      - net zero target
+      - nationally determined contribution
+      - ndc
+      - cop summit
+      - unfccc
+      - paris agreement
+      - glasgow pact
+      - carbon market
+      - carbon credit
+      - carbon border adjustment
+      - green taxonomy
+      - climate finance
+      - loss and damage
+      - fossil fuel phase out
+      - renewable energy transition
+      - energy efficiency
+      - green hydrogen economy
+      - circular economy
+      - plastic pollution
+      - e-waste management
+      - air quality
+      - national clean air programme
+      - water pollution
+      - river rejuvenation
+      - namami gange
+      - groundwater conservation
+      - wetland conservation
+      - ramsar site
+      - national mission clean ganga
+      - cop30
+      - belem cop30
+      - forest finance
+      - tropical forest finance
+    - name: Biodiversity & Ecology
+      weight: 9
+      keywords:
+      - biodiversity conservation
+      - biological diversity act
+      - convention biological diversity
+      - cbd
+      - kunming montreal framework
+      - 30x30 target
+      - protected area network
+      - tiger reserve
+      - project tiger
+      - elephant reserve
+      - project elephant
+      - wildlife protection act
+      - forest conservation act
+      - compensatory afforestation
+      - mangrove protection
+      - coral reef
+      - marine protected area
+      - invasive species
+      - endangered species
+      - red list iucn
+      - one health
+      - zoonotic disease
+      - national wildlife action plan
+      - ecosystem services
+      - nagoya protocol
+      - access and benefit sharing
+      - bioprospecting
+      - biosafety
+      - genetic resources
+    - name: Internal Security & Border Management
+      weight: 8
+      keywords:
+      - left wing extremism
+      - naxalism
+      - maoism
+      - terrorist organisation
+      - counter terrorism
+      - uapa
+      - national investigation agency
+      - nia
+      - narcotics trade
+      - drug trafficking
+      - money laundering
+      - hawala
+      - border management
+      - line of control
+      - line of actual control
+      - border infrastructure
+      - border security force
+      - coast guard
+      - maritime security
+      - cyber security
+      - critical information infrastructure
+      - critical infrastructure protection
+      - hybrid warfare
+      - information warfare
+      - social media monitoring
+      - fake news
+      - radicalization
+      - counter radicalization
+      - northeast insurgency
+      - proxy war
+    - name: Defence & National Security
+      weight: 8
+      keywords:
+      - defence acquisition procedure
+      - indigenous defence
+      - atmanirbhar defence
+      - defence production
+      - defence export
+      - theatre commands reform
+      - chief defence staff
+      - integrated theatre command
+      - joint exercise
+      - exercise tasman saber
+      - agnipath scheme
+      - agniveer
+      - defence modernisation
+      - hypersonic missile
+      - anti-drone system
+      - space defence
+      - cyber warfare
+      - nuclear triad
+      - missile defence
+      - defence corridor
+    - name: Disaster Management
+      weight: 7
+      keywords:
+      - disaster risk reduction
+      - sendai framework
+      - national disaster management authority
+      - ndma
+      - state disaster management authority
+      - sdma
+      - national disaster response force
+      - ndrf
+      - early warning system
+      - flood management
+      - cyclone preparedness
+      - earthquake resilience
+      - drought management
+      - heat wave action plan
+      - chemical industrial disaster
+      - urban flooding
+      - cloud burst
+      - landslide
+      - disaster risk financing
+      - climate resilient infrastructure
+      - coalition disaster resilient infrastructure
+      - cdri
+  GS4:
+    topics:
+    - name: Ethics in Public Administration
+      weight: 9
+      keywords:
+      - probity in governance
+      - integrity
+      - transparency
+      - accountability
+      - whistleblower protection
+      - conflict of interest
+      - code of conduct
+      - code of ethics
+      - civil services ethics
+      - ethical dilemma
+      - moral courage
+      - moral turpitude
+      - ethical leadership
+      - public servant accountability
+      - right to information
+      - rti act
+      - social audit
+      - citizen charter
+      - grievance redressal
+      - anti-corruption
+      - lokayukta
+      - ombudsman
+    - name: Values & Attitude in Civil Services
+      weight: 8
+      keywords:
+      - emotional intelligence
+      - compassion administration
+      - empathy governance
+      - attitude change
+      - value education
+      - foundational values
+      - dedication public service
+      - impartiality
+      - non-partisanship
+      - objectivity
+      - tolerance
+      - commitment weaker sections
+      - rule of law
+      - aptitude public service
+      - service delivery
+      - public trust
+    - name: Governance, E-Governance & Accountability
+      weight: 7
+      keywords:
+      - e-governance
+      - digital governance
+      - paperless administration
+      - pm gati shakti portal
+      - direct benefit transfer
+      - dbt efficiency
+      - participatory governance
+      - self-help group governance
+      - decentralised governance
+      - public private partnership
+      - corporate social responsibility
+      - good governance index
+      - national e-governance plan
+      - digital public infrastructure
+      - government transparency index
+      - open government data
+      - social accountability
+    - name: Case Studies & Applied Ethics
+      weight: 6
+      keywords:
+      - ethical case study
+      - administrative ethics case
+      - police brutality
+      - custodial death
+      - encounter killing
+      - bureaucratic corruption case
+      - judicial independence
+      - media ethics
+      - corporate governance failure
+      - human rights violation
+      - whistleblower case
+      - civil disobedience ethics
+      - privacy vs security
+      - affirmative action ethics
+      - environmental ethics
+      - bioethics
+      - ai ethics
+      - technology ethics

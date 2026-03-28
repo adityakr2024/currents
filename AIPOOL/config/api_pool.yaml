@@ -1,0 +1,181 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# AIPOOL/config/api_pool.yaml
+#
+# Provider configuration — no secrets here.
+# Secrets come from env vars (GitHub Actions) or config/api_keys.yaml (local).
+#
+# PROVIDER TYPES
+#   LLM providers  → use pool.call(prompt, system)
+#   Search providers → use pool.search(query, max_results, search_depth)
+#
+# ADDING A PROVIDER
+#   1. Add a block below with the correct caller_type
+#   2. Set env_key_pattern to match your secret naming
+#   3. Add secrets: MYPROVIDER_API_1=... in GitHub or api_keys.yaml
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ══════════════════════════════════════════════════════════════════════════════
+# LLM PROVIDERS  —  pool.call(prompt, system)
+# ══════════════════════════════════════════════════════════════════════════════
+
+providers:
+
+  groq:
+    priority: 1                          # tried first among LLM providers
+    type: llm                            # pool.call() routes here
+    base_url: "https://api.groq.com/openai/v1"
+    caller_type: "openai_compat"
+    models:
+      primary:  "llama-3.3-70b-versatile"
+      fallback: "llama-3.1-8b-instant"
+    timeout_seconds: 25
+    max_tokens: 2500
+    rate_limit:
+      calls_per_minute: 30
+      tokens_per_minute: 6000
+    health_check_delay_seconds: 0        # no delay needed — 4 keys spread load
+    env_key_pattern: "GROQ_API_"
+
+  gemini:
+    priority: 2
+    type: llm
+    base_url: "https://generativelanguage.googleapis.com/v1beta"
+    caller_type: "gemini"
+    models:
+      primary:  "gemini-2.0-flash"           # gemini-1.5-flash deprecated — use 2.0
+      fallback: "gemini-2.0-flash-lite"
+    timeout_seconds: 30
+    max_tokens: 2500
+    rate_limit:
+      calls_per_minute: 15
+      tokens_per_minute: 32000
+    health_check_delay_seconds: 10       # free tier = per-ACCOUNT quota shared across all keys.
+                                         # 10s gap prevents health check from exhausting RPM bucket.
+    env_key_pattern: "GEMINI_API_"
+
+  openrouter:
+    priority: 3
+    type: llm
+    base_url: "https://openrouter.ai/api/v1"
+    caller_type: "openai_compat"
+    models:
+      primary:  "meta-llama/llama-3.3-70b-instruct:free"
+      fallback: "mistralai/mistral-7b-instruct:free"
+    timeout_seconds: 35
+    max_tokens: 2500
+    rate_limit:
+      calls_per_minute: 20
+      tokens_per_minute: 10000
+    health_check_delay_seconds: 20       # OpenRouter free tier = per-ACCOUNT quota, not per-key.
+                                         # Multiple keys from same account share one RPM bucket.
+                                         # 20s gap prevents health check from exhausting it.
+                                         # Real pipeline calls are far apart — no issue there.
+    env_key_pattern: "OPENROUTER_API_"
+
+  cerebras:
+    priority: 4
+    type: llm
+    base_url: "https://api.cerebras.ai/v1"
+    caller_type: "openai_compat"
+    models:
+      primary:  "llama3.1-70b"
+      fallback: "llama3.1-8b"
+    timeout_seconds: 20
+    max_tokens: 2500
+    rate_limit:
+      calls_per_minute: 30
+      tokens_per_minute: 60000
+    health_check_delay_seconds: 2
+    env_key_pattern: "CEREBRAS_API_"
+
+  anthropic:
+    priority: 5
+    type: llm
+    base_url: "https://api.anthropic.com/v1"
+    caller_type: "anthropic"
+    models:
+      primary:  "claude-haiku-4-5-20251001"
+      fallback: "claude-haiku-4-5-20251001"
+    timeout_seconds: 30
+    max_tokens: 2500
+    rate_limit:
+      calls_per_minute: 50
+      tokens_per_minute: 40000
+    health_check_delay_seconds: 1
+    env_key_pattern: "ANTHROPIC_API_"
+
+  openai:
+    priority: 6
+    type: llm
+    base_url: "https://api.openai.com/v1"
+    caller_type: "openai_compat"
+    models:
+      primary:  "gpt-4o-mini"
+      fallback: "gpt-3.5-turbo"
+    timeout_seconds: 30
+    max_tokens: 2500
+    rate_limit:
+      calls_per_minute: 60
+      tokens_per_minute: 40000
+    health_check_delay_seconds: 1
+    env_key_pattern: "OPENAI_API_"
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SEARCH PROVIDERS  —  pool.search(query, max_results, search_depth)
+#
+# All search providers return a normalized response:
+#   {"query": "...", "provider": "...", "results": [
+#     {"title": "...", "url": "...", "content": "...", "score": 0.95}, ...
+#   ]}
+#
+# This schema is identical regardless of which provider answered.
+# Downstream modules (notes_writer etc.) always parse the same structure.
+# ══════════════════════════════════════════════════════════════════════════════
+
+search_providers:
+
+  tavily:
+    priority: 1                          # tried first among search providers
+    type: search
+    base_url: "https://api.tavily.com"
+    caller_type: "tavily"
+    search_depth: "advanced"             # "basic" | "advanced" — advanced for grounding
+    max_results: 5                       # default; override per call if needed
+    include_answer: false                # raw results only — LLM does the synthesis
+    timeout_seconds: 30
+    health_check_delay_seconds: 3
+    env_key_pattern: "TAVILY_API_"
+
+  # ── Future: Brave Search ──────────────────────────────────────────────────
+  # Uncomment when adding Brave keys.
+  # brave:
+  #   priority: 2
+  #   type: search
+  #   base_url: "https://api.search.brave.com/res/v1"
+  #   caller_type: "brave"
+  #   max_results: 5
+  #   timeout_seconds: 15
+  #   health_check_delay_seconds: 2
+  #   env_key_pattern: "BRAVE_API_"
+
+  # ── Serper (Google Search via serper.dev) ────────────────────────────────
+  serper:
+    priority: 3
+    type: search
+    base_url: "https://google.serper.dev"
+    caller_type: "serper"
+    max_results: 5
+    timeout_seconds: 15
+    health_check_delay_seconds: 2
+    env_key_pattern: "SERPER_API_"
+
+# ── Circuit breaker ───────────────────────────────────────────────────────────
+circuit_breaker:
+  failure_threshold: 3
+  reset_on_new_run: true
+
+# ── Metrics ───────────────────────────────────────────────────────────────────
+metrics:
+  output_dir: "../data/api_metrics"
+  persist: true
+  max_error_history: 5

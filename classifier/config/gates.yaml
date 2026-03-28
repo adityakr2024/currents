@@ -1,0 +1,39 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# gates.yaml — Scoring bands, source weights, and gate configuration
+# Edit this file to tune classifier behaviour without touching code.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Score band definitions
+# An article passes through all gates sequentially.
+# Gate 1 (hard exclude) sets score=0 regardless of keywords.
+# Final score = min(base_score + boost_score, max_score)
+bands:
+  excluded_max: 10      # 0–10   → EXCLUDED  (was 20 — too aggressive, killed editorials + IR articles)
+  low_max:      45      # 11–45  → LOW       (articles scoring 11-20 now reach filter for evaluation)
+  medium_max:   70      # 46–70  → MEDIUM
+                        # 71–100 → HIGH
+
+score:
+  max_score:           100
+  boost_max:            30    # booster.py can add at most this much
+  text_absent_penalty:  -5    # applied when article_text is empty/null
+  india_proximity_bonus: 3    # any article mentioning India
+  india_intl_bonus:      4    # international-category article with India mention
+  institution_bonus:     3    # mention of a known national institution
+  source_pib_bonus:      8    # PIB articles are policy-primary
+  source_prs_bonus:      6    # PRS India — legislative analysis
+  scheme_signal_1:       4    # 1–2 scheme signals hit
+  scheme_signal_3:       8    # 3+ scheme signals hit
+  amount_mention_bonus:  3    # Rs/crore/lakh figure present
+  beneficiary_bonus:     3    # crore/lakh + beneficiary class mentioned
+  action_phrase_bonus:   8    # strong action verb in title
+
+# Federalism scoring rules
+federalism:
+  centre_state_both:  +15   # state + national institution mentioned together
+  state_cm_only:      -25   # state cabinet/CM headline, no national anchor
+
+# How many matched topics to include in output
+output:
+  max_matched_topics: 5
+  max_classification_note_items: 4   # items shown in classification_note string
